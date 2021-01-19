@@ -19,23 +19,24 @@
       </q-toolbar>
     </q-header>
 
-    <q-footer elevated>
-      <q-toolbar>
-        <q-tabs>
-          <q-route-tab
-            to="/"
-            icon="mail"
-            label="Home"
-            name="home"
-          />
-          <q-route-tab
-            to="/camera"
-            icon="alarm"
-            label="Camera"
-            name="camera"
-          />
-        </q-tabs>
-      </q-toolbar>
+    <q-footer
+      class="bg-white"
+      bordered
+    >
+      <q-tabs
+        class="text-grey-10"
+        active-color="primary"
+        indicator-color="transparent"
+      >
+        <q-route-tab
+          to="/"
+          icon="eva-home-outline"
+        />
+        <q-route-tab
+          to="/camera"
+          icon="eva-camera-outline"
+        />
+      </q-tabs>
     </q-footer>
 
     <q-page-container>
@@ -53,3 +54,9 @@ export default {
   }
 }
 </script>
+
+<style lang="sass">
+  .q-footer
+    .q-tab__icon
+      font-size: 30px
+</style>
