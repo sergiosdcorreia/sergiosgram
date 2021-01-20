@@ -99,7 +99,7 @@ export default {
   },
   filters: {
     formatedDate(value) {
-      return date.formatDate(value, 'MMMM D HH:mm')
+      return date.formatDate(value, 'MMMM D, HH:mm')
     }
   }
 }
