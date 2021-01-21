@@ -30,7 +30,7 @@
     response.set('Access-Control-Allow-Origin', '*')
 
     let posts = []
-    db.collection('posts').get().then(snapshot => {
+    db.collection('posts').orderBy('date', 'desc').get().then(snapshot => {
       snapshot.forEach((doc) => {
         posts.push(doc.data())
       })
