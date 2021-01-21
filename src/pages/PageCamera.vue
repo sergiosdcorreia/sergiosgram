@@ -103,7 +103,7 @@ export default {
       if ('geolocation' in navigator) return true
       else return false
     }
-  }
+  },
   methods: {
     initCamera() {
       navigator.mediaDevices.getUserMedia({
