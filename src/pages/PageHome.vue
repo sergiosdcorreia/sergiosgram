@@ -65,42 +65,25 @@ export default {
   name: 'PageHome',
   data() {
     return {
-      posts: [
-        {
-          id: 1,
-          caption: 'Luis I Bridge',
-          date: 1611068397977,
-          location: 'Porto, Portugal',
-          imageUrl: 'https://images.unsplash.com/photo-1570082799531-e8a190b717ca?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=889&q=80'
-        },
-        {
-          id: 2,
-          caption: 'Luis I Bridge',
-          date: 1611068397977,
-          location: 'Porto, Portugal',
-          imageUrl: 'https://images.unsplash.com/photo-1570082799531-e8a190b717ca?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=889&q=80'
-        },
-        {
-          id: 3,
-          caption: 'Luis I Bridge',
-          date: 1611068397977,
-          location: 'Porto, Portugal',
-          imageUrl: 'https://images.unsplash.com/photo-1570082799531-e8a190b717ca?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=889&q=80'
-        },
-        {
-          id: 4,
-          caption: 'Luis I Bridge',
-          date: 1611068397977,
-          location: 'Porto, Portugal',
-          imageUrl: 'https://images.unsplash.com/photo-1570082799531-e8a190b717ca?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=889&q=80'
-        },
-      ]
+      posts: []
+    }
+  },
+  methods: {
+    getPosts() {
+      this.$axios.get('http://localhost:3000/posts').then(response => {
+        this.posts = response.data
+      }).catch(err => {
+        console.log('err: ', err)
+      } )
     }
   },
   filters: {
     formatedDate(value) {
       return date.formatDate(value, 'MMMM D, HH:mm')
     }
+  },
+  created() {
+    this.getPosts()
   }
 }
 </script>
