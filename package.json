@@ -6,7 +6,7 @@
   "author": "Sergio Correia <sergiosdcorreia@gmail.com>",
   "private": true,
   "scripts": {
-    "test": "echo \"No test specified\" && exit 0"
+    "icons": "icongenie generate -i app-icon.png --skip-trim --theme-color 212121"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
@@ -16,7 +16,8 @@
     "quasar": "^1.0.0"
   },
   "devDependencies": {
-    "@quasar/app": "^2.0.0"
+    "@quasar/app": "^2.0.0",
+    "workbox-webpack-plugin": "^5.1.4"
   },
   "browserslist": [
     "ie >= 11",
