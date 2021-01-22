@@ -30,11 +30,53 @@
     </q-header>
 
     <q-footer
-      class="bg-white small-screen-only"
+      class="bg-white"
       bordered
     >
+      <div
+        v-if="showAppInstallBanner"
+        class="div banner-container bg-primary"
+      >
+        <div class="constrain">
+          <q-banner inline-actions dense class="bg-blue text-white">
+            <template v-slot:avatar>
+              <q-avatar 
+                color="white"
+                icon="eva-camera-outline"
+                text-color="grey-10"
+                font-size="20px"
+              />
+            </template>
+            
+            <b>Install Sergio's Gram?</b>
+
+            <template v-slot:action>
+              <q-btn
+                @click="installApp"
+                class="q-px-sm"
+                label="Yes"
+                dense
+                flat
+              />
+              <q-btn
+                class="q-px-sm"
+                label="later"
+                dense
+                flat
+              />
+              <q-btn
+                class="q-px-sm"
+                label="Never"
+                dense
+                flat
+              />
+            </template>
+          </q-banner>
+        </div>
+      </div>
+
       <q-tabs
-        class="text-grey-10"
+        class="text-grey-10 small-screen-only"
         active-color="primary"
         indicator-color="transparent"
       >
@@ -56,11 +98,36 @@
 </template>
 
 <script>
+let deferredPrompt
+
 export default {
   name: 'MainLayout',
   data () {
     return {
+      showAppInstallBanner: false
     }
+  },
+  methods: {
+    installApp() {
+      this.showAppInstallBanner = false
+      deferredPrompt.prompt()
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+
+        } else {
+          
+        }
+      })
+    }
+  },
+  mounted() {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault()
+
+      deferredPrompt = e
+
+      this.showAppInstallBanner = true
+    })
   }
 }
 </script>
