@@ -59,12 +59,14 @@
                 flat
               />
               <q-btn
+                @click="showAppInstallBanner = false"
                 class="q-px-sm"
                 label="later"
                 dense
                 flat
               />
               <q-btn
+                @click="neverShowAppInstallBanner"
                 class="q-px-sm"
                 label="Never"
                 dense
@@ -113,21 +115,29 @@ export default {
       deferredPrompt.prompt()
       deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
-
+          this.neverShowAppInstallBanner()
         } else {
-          
+
         }
       })
+    },
+    neverShowAppInstallBanner() {
+      this.showAppInstallBanner = false
+      this.$q.localStorage.set('neverShowAppInstallBanner', true)
     }
   },
   mounted() {
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault()
+    let neverShowAppInstallBanner = this.$q.localStorage.getItem('neverShowAppInstallBanner')
 
-      deferredPrompt = e
-
-      this.showAppInstallBanner = true
-    })
+    if (!neverShowAppInstallBanner) {
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault()
+  
+        deferredPrompt = e
+  
+        this.showAppInstallBanner = true
+      })
+    }
   }
 }
 </script>
