@@ -6,7 +6,8 @@
   "author": "Sergio Correia <sergiosdcorreia@gmail.com>",
   "private": true,
   "scripts": {
-    "icons": "icongenie generate -i app-icon.png --skip-trim --theme-color 212121"
+    "icons": "icongenie generate -i app-icon.png --skip-trim --theme-color 212121",
+    "deploy": "quasar build -m pwa && firebase deploy"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",

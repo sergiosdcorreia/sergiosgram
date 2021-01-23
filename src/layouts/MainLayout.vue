@@ -33,50 +33,55 @@
       class="bg-white"
       bordered
     >
-      <div
-        v-if="showAppInstallBanner"
-        class="div banner-container bg-primary"
+      <transition
+        appear
+        enter-active-class="animated fadeIn"
+        leave-active-class="animated fadeOut"
       >
-        <div class="constrain">
-          <q-banner inline-actions dense class="bg-blue text-white">
-            <template v-slot:avatar>
-              <q-avatar 
-                color="white"
-                icon="eva-camera-outline"
-                text-color="grey-10"
-                font-size="20px"
-              />
-            </template>
-            
-            <b>Install Sergio's Gram?</b>
+        <div
+          v-if="showAppInstallBanner"
+          class="div banner-container bg-primary"
+        >
+          <div class="constrain">
+            <q-banner inline-actions dense class="bg-blue text-white">
+              <template v-slot:avatar>
+                <q-avatar 
+                  color="white"
+                  icon="eva-camera-outline"
+                  text-color="grey-10"
+                  font-size="20px"
+                />
+              </template>
+              
+              <b>Install Sergio's Gram?</b>
 
-            <template v-slot:action>
-              <q-btn
-                @click="installApp"
-                class="q-px-sm"
-                label="Yes"
-                dense
-                flat
-              />
-              <q-btn
-                @click="showAppInstallBanner = false"
-                class="q-px-sm"
-                label="later"
-                dense
-                flat
-              />
-              <q-btn
-                @click="neverShowAppInstallBanner"
-                class="q-px-sm"
-                label="Never"
-                dense
-                flat
-              />
-            </template>
-          </q-banner>
+              <template v-slot:action>
+                <q-btn
+                  @click="installApp"
+                  class="q-px-sm"
+                  label="Yes"
+                  dense
+                  flat
+                />
+                <q-btn
+                  @click="showAppInstallBanner = false"
+                  class="q-px-sm"
+                  label="later"
+                  dense
+                  flat
+                />
+                <q-btn
+                  @click="neverShowAppInstallBanner"
+                  class="q-px-sm"
+                  label="Never"
+                  dense
+                  flat
+                />
+              </template>
+            </q-banner>
+          </div>
         </div>
-      </div>
-
+      </transition>
       <q-tabs
         class="text-grey-10 small-screen-only"
         active-color="primary"
@@ -135,7 +140,9 @@ export default {
   
         deferredPrompt = e
   
-        this.showAppInstallBanner = true
+        setTimeout(() => {
+          this.showAppInstallBanner = true
+        }, 3000)
       })
     }
   }
