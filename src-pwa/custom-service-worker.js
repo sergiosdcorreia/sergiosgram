@@ -14,12 +14,28 @@ import { StaleWhileRevalidate } from 'workbox-strategies'
 import { CacheFirst, NetworkFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
+import {Queue} from 'workbox-background-sync'
 
  /*
   config
 */
 
+// disable workbox logs
+self.__WB_DISABLE_DEV_LOGS = true
+
 precacheAndRoute(self.__WB_MANIFEST)
+
+let backgroundSyncSupported = 'sync' in self.registration ? true : false
+
+/*
+  queue - createPost
+*/
+
+let createPostQueue = null
+
+if (backgroundSyncSupported) {
+  createPostQueue = new Queue('createPostQueue')
+}
 
 /*
   caching strategies
@@ -49,3 +65,21 @@ registerRoute(
   ({url}) => url.href.startsWith('http'),
   new StaleWhileRevalidate()
 );
+
+/*
+  events - fetch
+*/
+
+if (backgroundSyncSupported) {
+  self.addEventListener('fetch', (event) => {
+    if (event.request.url.endsWith('/createPost')) {
+      // Clone the request to ensure it's safe to read when
+      // adding to the Queue.
+      const promiseChain = fetch(event.request.clone()).catch((err) => {
+        return createPostQueue.pushRequest({request: event.request})
+      })
+      event.waitUntil(promiseChain)
+    }
+  
+  })
+}

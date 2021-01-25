@@ -14,6 +14,7 @@
     "axios": "^0.18.1",
     "core-js": "^3.6.5",
     "firebase": "^8.2.4",
+    "idb": "^6.0.0",
     "md-gum-polyfill": "^1.0.0",
     "quasar": "^1.0.0"
   },
