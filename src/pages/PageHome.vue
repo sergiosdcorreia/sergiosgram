@@ -8,6 +8,7 @@
             v-for="post in posts"
             :key="post.id"
             class="card-post q-mb-md"
+            :class="{ 'bg-red-2' : post.offline }"
             bordered
             flat
           >
@@ -100,6 +101,12 @@ export default {
       loadingPosts: false
     }
   },
+  computed: {
+    serviceWorkerSupported() {
+      if ('serviceWorker' in navigator) return true
+      return false
+    }
+  },
   methods: {
     getPosts() {
       this.loadingPosts = true
@@ -144,6 +151,18 @@ export default {
           console.log('Error accessing IndexedDB: ', err)
         })
       })
+    },
+    listenForOfflinePostUploaded() {
+      if (this.serviceWorkerSupported) {
+        const channel = new BroadcastChannel('sw-messages')
+        channel.addEventListener('message', event => {
+          console.log('Received: ', event.data)
+          if (event.data.msg == 'offline-post-uploaded') {
+            let offlinePostCount = this.posts.filter(post => post.offline == true).length
+            this.posts[offlinePostCount - 1].offline = false
+          }
+        })
+      }
     }
   },
   filters: {
@@ -151,8 +170,11 @@ export default {
       return date.formatDate(value, 'MMMM D, HH:mm')
     }
   },
-  created() {
+  activated() {
     this.getPosts()
+  },
+  created() {
+    this.listenForOfflinePostUploaded()
   }
 }
 </script>

@@ -99,7 +99,9 @@
     </q-footer>
 
     <q-page-container class="bg-grey-1">
-      <router-view />
+      <keep-alive :include="['PageHome']">
+        <router-view />
+      </keep-alive>
     </q-page-container>
   </q-layout>
 </template>
