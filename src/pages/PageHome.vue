@@ -5,7 +5,7 @@
       enter-active-class="animated fadeIn"
       leave-active-class="animated fadeOut"
     >
-      <div v-if="showNotificationsBanner" class="div banner-container bg-primary">
+      <div v-if="showNotificationsBanner && pushNotificationsSupported" class="div banner-container bg-primary">
         <div class="constrain">
           <q-banner class="bg-grey-3 text-grey q-mb-md">
             <template v-slot:avatar>
@@ -158,8 +158,12 @@ export default {
   },
   computed: {
     serviceWorkerSupported() {
-      if ("serviceWorker" in navigator) return true;
-      return false;
+      if ("serviceWorker" in navigator) return true
+      return false
+    },
+    pushNotificationsSupported() {
+      if ('PushManager' in window) return true
+      return false
     }
   },
   methods: {
@@ -237,7 +241,53 @@ export default {
       }
     },
     enableNotifications() {
-      console.log('enable notifications')
+      if (this.pushNotificationsSupported) {
+        Notification.requestPermission(result => {
+          console.log('result: ', result)
+          this.neverShowNotificationsBanner()
+          if (result == 'granted') {
+            this.displayGrantedNotification()
+          }
+        })
+      }
+    },
+    displayGrantedNotification() {
+    //  new Notification('You subscribed to notifications', {
+    //    body: 'Thanks for subscribing!',
+    //    icon: 'icons/icon-128x128.png',
+    //    image: 'icons/icon-128x128.png',
+    //    badge: 'icons/icon-128x128.png',
+    //    lang: 'en-US',
+    //    vibrate: [100, 50, 200],
+    //    tag: 'confirm-notification',
+    //    renotify: true
+    //  })
+      if (this.serviceWorkerSupported && this.pushNotificationsSupported) {
+        navigator.serviceWorker.ready.then(swreg => {
+          swreg.showNotification('You subscribed to notifications', {
+            body: 'Thanks for subscribing!',
+            icon: 'icons/icon-128x128.png',
+            image: 'icons/icon-128x128.png',
+            badge: 'icons/icon-128x128.png',
+            lang: 'en-US',
+            vibrate: [100, 50, 200],
+            tag: 'confirm-notification',
+            renotify: true,
+            actions: [
+                {
+                action: 'hello',
+                title: 'Hello',
+                icon: 'icons/icon-128x128.png'
+              },
+              {
+                action: 'goodbye',
+                title: 'GoodBye',
+                icon: 'icons/icon-128x128.png'
+              }
+            ]
+          })
+        })
+      }
     },
     neverShowNotificationsBanner() {
       this.showNotificationsBanner = false
