@@ -10,6 +10,7 @@
   let os = require('os')
   let fs = require('fs')
   let UUID = require('uuid-v4')
+  let webpush = require('web-push')
 
 /*
   config - express
@@ -29,6 +30,16 @@
 
   const db = admin.firestore()
   let bucket = admin.storage().bucket()
+
+/*
+  config - webpush
+*/
+
+webpush.setVapidDetails(
+  'mailto: sergioseoblog@gmail.com',
+  'BDpbI_84r87m8i45uraYM1NejGD0_v4eiY66-H4ATYOjI_JHukhqF8qXoFq9ii3Teu7E8feOOZ9OJxVupKvU5zs', // public key
+  'xcXeeCoruWYcIv-QnMRLx7aJpr_sIwK48Ay3CBQ51f0' // private key
+)
 
 /*
   endpoint - posts
@@ -100,10 +111,37 @@ app.post('/createPost', (request, response) => {
         date: parseInt(fields.date),
         imageUrl: `https://firebasestorage.googleapis.com/v0/b/${ bucket.name }/o/${ uploadedFile.name }?alt=media&token=${ uuid }`
       }).then(() => {
+        sendPushNotification()
         response.send('Post added: ', fields.id)
       })
     }
-    response.send('Done parsing form')
+    function sendPushNotification() {
+      
+      let subscriptions = []
+      db.collection('subscriptions').get().then(snapshot => {
+        snapshot.forEach((doc) => {
+          subscriptions.push(doc.data())
+        })
+        return subscriptions
+      }).then(subscriptions => {
+        subscriptions.forEach(subscription => {
+          const pushSubscription = {
+            endpoint: subscription.endpoint,
+            keys: {
+              auth: subscription.keys.auth,
+              p256dh: subscription.keys.p256dh
+            }
+          }
+          let pushContent = {
+            title: 'New SergiosGram post!',
+            body: 'New Post Added! Check it out!',
+            openUrl: '/#/'
+          }
+          let pushContentStringified = JSON.stringify(pushContent)
+          webpush.sendNotification(pushSubscription, pushContentStringified)
+        })
+      })
+    }
   });
 
   request.pipe(busboy)

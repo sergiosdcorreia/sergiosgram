@@ -94,14 +94,39 @@ if (backgroundSyncSupported) {
     if (event.request.url.endsWith('/createPost')) {
       // Clone the request to ensure it's safe to read when
       // adding to the Queue.
-      const promiseChain = fetch(event.request.clone()).catch((err) => {
-        return createPostQueue.pushRequest({request: event.request})
-      })
-      event.waitUntil(promiseChain)
+      if (!self.navigator.onLine) {
+        const promiseChain = fetch(event.request.clone()).catch((err) => {
+          return createPostQueue.pushRequest({request: event.request})
+        })
+        event.waitUntil(promiseChain)
+      }
     }
   
   })
 }
+
+/*
+  events - push
+*/
+
+self.addEventListener('push', event => {
+  if (event.data) {
+    let data = JSON.parse(event.data.text())
+    event.waitUntil(
+      self.registration.showNotification(
+        data.title,
+        {
+          body: data.body,
+          icon: 'icons/icon-128x128.png',
+          badge: 'icons/icon-128x128.png',
+          data: {
+            openUrl: data.openUrl
+          }
+        } 
+      )
+    )
+  }
+})
 
 /*
   events - notifications
@@ -118,7 +143,22 @@ self.addEventListener('notificationclick', event => {
     console.log('Goodbye button was clicked')
   }
   else {
-    console.log('Main notification was clicked')
+    event.waitUntil(
+      clients.matchAll().then(clis => {
+        // console.log('clis: ', clis)
+        let clientUsingApp = clis.find(cli => {
+          return cli.visibilityState === 'visible'
+        })
+
+        if (clientUsingApp) {
+          clientUsingApp.navigate(notification.data.openUrl)
+          clientUsingApp.focus()
+        }
+        else {
+          clients.openWindow(notification.data.openUrl)
+        }
+      })
+    )
   }
   notification.close()
 })

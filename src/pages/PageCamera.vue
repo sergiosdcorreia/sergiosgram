@@ -233,6 +233,7 @@ export default {
           // redirect to home page
           this.$q.notify('Post created offline')
           this.$router.push('/')
+          this.$q.loading.hide()
         } else {
           this.$q.dialog({
             title: 'Error',
