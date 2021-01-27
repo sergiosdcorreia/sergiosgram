@@ -102,3 +102,27 @@ if (backgroundSyncSupported) {
   
   })
 }
+
+/*
+  events - notifications
+*/
+
+self.addEventListener('notificationclick', event => {
+  let notification = event.notification
+  let action = event.action
+
+  if (action === 'hello') {
+    console.log('Hello button was clicked')
+  }
+  else if (action === 'goodbye') {
+    console.log('Goodbye button was clicked')
+  }
+  else {
+    console.log('Main notification was clicked')
+  }
+  notification.close()
+})
+
+self.addEventListener('notificationclose', event => {
+  console.log('Notification was closed', event)
+})

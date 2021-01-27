@@ -144,8 +144,9 @@
 </template>
 
 <script>
-import { date } from "quasar";
-import { openDB } from "idb";
+import { date } from "quasar"
+import { openDB } from "idb"
+let qs = require('qs')
 
 export default {
   name: "PageHome",
@@ -246,10 +247,40 @@ export default {
           console.log('result: ', result)
           this.neverShowNotificationsBanner()
           if (result == 'granted') {
-            this.displayGrantedNotification()
+            // this.displayGrantedNotification()
+            this.checkForExistingPushSubscription()
           }
         })
       }
+    },
+    checkForExistingPushSubscription() {
+      if (this.serviceWorkerSupported && this.pushNotificationsSupported) {
+        let reg
+        navigator.serviceWorker.ready.then(swreg => {
+          reg = swreg
+          return swreg.pushManager.getSubscription()
+        }).then(sub => {
+          if (!sub) {
+            this.createPushSubscription(reg)
+          }
+        })
+      }
+    },
+    createPushSubscription(reg) {
+      let vapidPublicKey = 'BDpbI_84r87m8i45uraYM1NejGD0_v4eiY66-H4ATYOjI_JHukhqF8qXoFq9ii3Teu7E8feOOZ9OJxVupKvU5zs'
+      let vapidPublicKeyConverted = this.urlBase64ToUint8Array(vapidPublicKey)
+      reg.pushManager.subscribe({
+        applicationServerKey: vapidPublicKeyConverted,
+        userVisibleOnly: true
+      }).then(newSub => {
+        let newSubData = newSub.toJSON(),
+            newSubDataQS = qs.stringify(newSubData)
+        return this.$axios.post(`${ process.env.API}/createSubscription?${newSubDataQS}`).then(response => {
+          this.displayGrantedNotification()
+        }).catch(err => {
+          console.log('err: ', err)
+        })
+      })
     },
     displayGrantedNotification() {
     //  new Notification('You subscribed to notifications', {
@@ -274,14 +305,14 @@ export default {
             tag: 'confirm-notification',
             renotify: true,
             actions: [
-                {
+              {
                 action: 'hello',
                 title: 'Hello',
                 icon: 'icons/icon-128x128.png'
               },
               {
                 action: 'goodbye',
-                title: 'GoodBye',
+                title: 'Goodbye',
                 icon: 'icons/icon-128x128.png'
               }
             ]
@@ -292,6 +323,20 @@ export default {
     neverShowNotificationsBanner() {
       this.showNotificationsBanner = false
       this.$q.localStorage.set('neverShowNotificationsBanner', true)
+    },
+    urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding)
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
     }
   },
   filters: {

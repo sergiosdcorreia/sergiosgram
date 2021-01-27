@@ -109,6 +109,16 @@ app.post('/createPost', (request, response) => {
   request.pipe(busboy)
 })
 
+app.post('/createSubscription', (request, response) => {
+  response.set('Access-Control-Allow-Origin', '*')
+  db.collection('subscriptions').add(request.query).then(docRef => {
+    response.send({
+      message: 'subscription added!',
+      postData: request.query
+    })
+  })
+})
+
 /*
   listen
 */
