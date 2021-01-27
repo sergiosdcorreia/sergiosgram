@@ -7,13 +7,11 @@
     >
       <div v-if="showNotificationsBanner" class="div banner-container bg-primary">
         <div class="constrain">
-          <q-banner inline-actions dense class="bg-blue text-white">
+          <q-banner class="bg-grey-3 text-grey q-mb-md">
             <template v-slot:avatar>
-              <q-avatar
-                color="white"
-                icon="eva-camera-outline"
-                text-color="grey-10"
-                font-size="20px"
+              <q-icon
+                color="primary"
+                name="eva-bell-outline"
               />
             </template>
 
@@ -24,6 +22,7 @@
                 @click="enableNotifications"
                 class="q-px-sm"
                 label="Yes"
+                color="primary"
                 dense
                 flat
               />
@@ -31,6 +30,7 @@
                 @click="showNotificationsBanner = false"
                 class="q-px-sm"
                 label="later"
+                color="primary"
                 dense
                 flat
               />
@@ -38,6 +38,7 @@
                 @click="neverShowNotificationsBanner"
                 class="q-px-sm"
                 label="Never"
+                color="primary"
                 dense
                 flat
               />
